@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# React Swapi Search Engine
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -45,6 +44,3 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-=======
-# swapi-search
->>>>>>> 7bb8e080ecce45eceeef8c14f81d0987eeb701df
