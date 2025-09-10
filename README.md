@@ -4,6 +4,8 @@ This project is a **React.js application** that demonstrates many of React’s c
 
 ---
 
+![React Swapi Search](./public/screenshot.png)
+
 ## 📦 Installation & Setup
 
 Clone the repository and install dependencies:
