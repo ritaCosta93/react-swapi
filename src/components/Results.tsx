@@ -1,42 +1,33 @@
-import type { IFilm } from '../models/films';
-import type { IPeople } from '../models/people';
-import type { IPlanet } from '../models/planets';
-import type { ISpecies } from '../models/species';
-import type { IStarship } from '../models/starships';
-import type { IVehicle } from '../models/vehicles';
+import { isFilmArray, isPeopleArray, isPlanetArray, isSpeciesArray, isStarshipArray, isVehicleArray } from '../guards/resultsGuard';
+import { useStore } from '../hooks/useStore';
+import { Result } from './Result';
 
-type ResultsProps = {
-  data: IFilm[] | IPeople[] | IPlanet[] | ISpecies[] | IStarship[] | IVehicle[] | null;
-};
+export const Results = () => {
+  const { results, searchTerm } = useStore();
 
-export const Results = ({ data }: ResultsProps) => {
-  if (!data) return <p>Invalid data</p>;
+  if (!results || !results.length) return <p />;
+
+  // Normalize search term for case-insensitive matching
+  const term = searchTerm?.trim().toLowerCase() || '';
+
+  // Filter helper
+  const filterByTerm = <T extends { name?: string; title?: string }>(items: T[]) => {
+    if (!term) return items;
+    return items.filter(item => {
+      if ('title' in item && item.title) return item.title.toLowerCase().includes(term);
+      if ('name' in item && item.name) return item.name.toLowerCase().includes(term);
+      return false;
+    });
+  };
 
   // Film
-  if ('title' in data[0]) {
+  if (isFilmArray(results)) {
+    const filtered = filterByTerm(results);
     return (
       <div>
-        {(data as IFilm[]).map(film => (
-          <div key={film.title}>
-            <h2>{film.title}</h2>
-            <p>Episode {film.episode_id}</p>
-            <p>Directed by {film.director}</p>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // People
-  if ('name' in data[0] && 'height' in data[0]) {
-    return (
-      <div>
-        {(data as IPeople[]).map(person => (
-          <div key={person.name}>
-            <h2>{person.name}</h2>
-            <p>Height: {person.height}</p>
-            <p>Mass: {person.mass}</p>
-            <p>Gender: {person.gender}</p>
+        {filtered.map(film => (
+          <div className='my-2 p-4 rounded bg-white gap-2' key={film.episode_id}>
+            <Result film={film} />
           </div>
         ))}
       </div>
@@ -44,15 +35,27 @@ export const Results = ({ data }: ResultsProps) => {
   }
 
   // Planet
-  if ('name' in data[0] && 'climate' in data[0]) {
+  if (isPlanetArray(results)) {
+    const filtered = filterByTerm(results);
     return (
       <div>
-        {(data as IPlanet[]).map(planet => (
-          <div key={planet.name}>
-            <h2>{planet.name}</h2>
-            <p>Climate: {planet.climate}</p>
-            <p>Population: {planet.population}</p>
-            <p>Diameter: {planet.diameter}</p>
+        {filtered.map(planet => (
+          <div className='grid my-2 p-4 rounded bg-white gap-2' key={planet.name}>
+            <Result planet={planet} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // People
+  if (isPeopleArray(results)) {
+    const filtered = filterByTerm(results);
+    return (
+      <div>
+        {filtered.map(person => (
+          <div className='grid my-2 p-4 rounded bg-white gap-2' key={person.name}>
+            <Result person={person} />
           </div>
         ))}
       </div>
@@ -60,15 +63,13 @@ export const Results = ({ data }: ResultsProps) => {
   }
 
   // Species
-  if ('name' in data[0] && 'classification' in data[0]) {
+  if (isSpeciesArray(results)) {
+    const filtered = filterByTerm(results);
     return (
       <div>
-        {(data as ISpecies[]).map(species => (
-          <div key={species.name}>
-            <h2>{species.name}</h2>
-            <p>Classification: {species.classification}</p>
-            <p>Designation: {species.designation}</p>
-            <p>Language: {species.language}</p>
+        {filtered.map(species => (
+          <div className='grid my-2 p-4 rounded bg-white gap-2' key={species.name}>
+            <Result species={species} />
           </div>
         ))}
       </div>
@@ -76,15 +77,13 @@ export const Results = ({ data }: ResultsProps) => {
   }
 
   // Starship
-  if ('name' in data[0] && 'model' in data[0] && 'manufacturer' in data[0]) {
+  if (isStarshipArray(results)) {
+    const filtered = filterByTerm(results);
     return (
       <div>
-        {(data as IStarship[]).map(starship => (
-          <div key={starship.name}>
-            <h2>{starship.name}</h2>
-            <p>Model: {starship.model}</p>
-            <p>Manufacturer: {starship.manufacturer}</p>
-            <p>Length: {starship.length}</p>
+        {filtered.map(starship => (
+          <div className='grid my-2 p-4 rounded bg-white gap-2' key={starship.name}>
+            <Result starship={starship} />
           </div>
         ))}
       </div>
@@ -92,20 +91,18 @@ export const Results = ({ data }: ResultsProps) => {
   }
 
   // Vehicle
-  if ('name' in data[0] && 'model' in data[0] && 'vehicle_class' in data[0]) {
+  if (isVehicleArray(results)) {
+    const filtered = filterByTerm(results);
     return (
       <div>
-        {(data as IVehicle[]).map(vehicle => (
-          <div key={vehicle.name}>
-            <h2>{vehicle.name}</h2>
-            <p>Model: {vehicle.model}</p>
-            <p>Manufacturer: {vehicle.manufacturer}</p>
-            <p>Vehicle Class: {vehicle.vehicle_class}</p>
+        {filtered.map(vehicle => (
+          <div className='grid my-2 p-4 rounded bg-white gap-2' key={vehicle.name}>
+            <Result vehicle={vehicle} />
           </div>
         ))}
       </div>
     );
   }
 
-  return <p>Unknown data</p>;
+  return <p>Unknown data type</p>;
 };

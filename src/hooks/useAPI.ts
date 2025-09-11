@@ -1,25 +1,25 @@
-import axios from 'axios';
+import type { SetStateAction } from 'react';
 import { useEffect, useState } from 'react';
 
-export const useAPI = <T = any[]>(category: string | null) => {
-  const [data, setData] = useState<T>([] as unknown as T);
-  const [loading, setLoading] = useState<boolean>(true);
+import type { TResults } from '../models/result';
+import { api } from '../services/api';
+
+export function useAPI(category: string | null) {
+  const [data, setData] = useState<TResults | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!category) return;
+
     setLoading(true);
     setError(null);
-    axios
-      .get(`https://swapi.info/api/${category}`)
-      .then(({ data }) => {
-        setData(data);
-      })
-      .catch((err: any) => {
-        setError(err?.message || String(err));
-      })
+
+    api(category)
+      .then((res: SetStateAction<TResults | null>) => setData(res))
+      .catch((err: { message: any }) => setError(err?.message || String(err)))
       .finally(() => setLoading(false));
   }, [category]);
 
   return { data, loading, error };
-};
+}
